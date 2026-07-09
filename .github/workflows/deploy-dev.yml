@@ -65,7 +65,7 @@ jobs:
 
       - name: Set up Terraform
         if: env.AZURE_SKIP_TERRAFORM != 'true'
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
 
       - name: Terraform init
         if: env.AZURE_SKIP_TERRAFORM != 'true'
