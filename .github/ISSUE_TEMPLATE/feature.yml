@@ -1,0 +1,24 @@
+name: Feature
+description: Describe user-facing functionality
+title: "[Feature]: "
+labels: ["feature"]
+body:
+  - type: textarea
+    id: story
+    attributes:
+      label: User Story
+      description: Who needs this and why?
+      placeholder: As a movie fan, I want...
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What must be true for this to be complete?
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Technical Notes

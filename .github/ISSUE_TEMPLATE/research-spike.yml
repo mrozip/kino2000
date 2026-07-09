@@ -1,0 +1,24 @@
+name: Research spike
+description: Explore an unknown before committing to implementation
+title: "[Spike]: "
+labels: ["research"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Research Question
+      description: What uncertainty should this answer?
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Timebox, technical constraints, or options to compare.
+  - type: textarea
+    id: output
+    attributes:
+      label: Expected Output
+      description: What decision, recommendation, prototype, or notes should result?
+    validations:
+      required: true

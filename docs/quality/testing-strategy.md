@@ -39,4 +39,3 @@ Use:
 - TFLint
 - Checkov or Trivy configuration scanning
 - Terraform plan review
-

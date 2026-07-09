@@ -1,0 +1,23 @@
+name: Technical task
+description: Track engineering work that does not directly expose a user feature
+title: "[Task]: "
+labels: ["technical-task"]
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What should change?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation
+      description: Which checks should prove this works?

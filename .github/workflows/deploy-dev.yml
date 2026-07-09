@@ -1,0 +1,129 @@
+name: Deploy development
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-development
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy development
+    runs-on: ubuntu-latest
+    environment: development
+    env:
+      AZURE_SKIP_TERRAFORM: ${{ vars.AZURE_SKIP_TERRAFORM || 'false' }}
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ARM_USE_OIDC: true
+      TF_VAR_application_name: kino2000
+      TF_VAR_cosmos_database: kino2000
+      TF_VAR_environment: dev
+      TF_VAR_function_app_name: ${{ vars.AZURE_FUNCTION_APP_NAME }}
+      TF_VAR_function_storage_account_name: ${{ vars.AZURE_FUNCTION_STORAGE_ACCOUNT_NAME }}
+      TF_VAR_location: ${{ vars.AZURE_LOCATION }}
+      TF_VAR_provision_api: ${{ vars.AZURE_PROVISION_API || 'false' }}
+      TF_VAR_static_web_app_location: ${{ vars.AZURE_STATIC_WEB_APP_LOCATION }}
+      TF_VAR_static_web_app_name: ${{ vars.AZURE_STATIC_WEB_APP_NAME }}
+      TF_VAR_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: npm
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate application
+        run: npm run format && npm run lint && npm run typecheck && npm test && npm run build
+
+      - name: Package API artifact
+        run: |
+          npm run package:api
+          npm install --omit=dev --ignore-scripts --prefix artifacts/api
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+
+      - name: Set up Terraform
+        if: env.AZURE_SKIP_TERRAFORM != 'true'
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform init
+        if: env.AZURE_SKIP_TERRAFORM != 'true'
+        run: |
+          terraform -chdir=infra/terraform/environments/dev init \
+            -backend-config="resource_group_name=${{ vars.TF_STATE_RESOURCE_GROUP }}" \
+            -backend-config="storage_account_name=${{ vars.TF_STATE_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ vars.TF_STATE_CONTAINER }}" \
+            -backend-config="key=kino2000-dev.tfstate" \
+            -backend-config="use_azuread_auth=true"
+
+      - name: Terraform apply
+        if: env.AZURE_SKIP_TERRAFORM != 'true'
+        run: terraform -chdir=infra/terraform/environments/dev apply -auto-approve
+
+      - name: Read Terraform outputs
+        if: env.AZURE_SKIP_TERRAFORM != 'true'
+        id: terraform-output
+        run: |
+          echo "function_app_name=$(terraform -chdir=infra/terraform/environments/dev output -raw function_app_name)" >> "$GITHUB_OUTPUT"
+          echo "resource_group_name=$(terraform -chdir=infra/terraform/environments/dev output -raw resource_group_name)" >> "$GITHUB_OUTPUT"
+          echo "static_web_app_name=$(terraform -chdir=infra/terraform/environments/dev output -raw static_web_app_name)" >> "$GITHUB_OUTPUT"
+          echo "storage_static_website_url=$(terraform -chdir=infra/terraform/environments/dev output -raw storage_static_website_url)" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy storage static website fallback
+        run: |
+          az storage blob upload-batch \
+            --account-name "${{ vars.AZURE_FUNCTION_STORAGE_ACCOUNT_NAME }}" \
+            --auth-mode login \
+            --destination '$web' \
+            --overwrite \
+            --source apps/web/dist
+
+      - name: Deploy API
+        if: env.AZURE_SKIP_TERRAFORM != 'true' && steps.terraform-output.outputs.function_app_name != ''
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ steps.terraform-output.outputs.function_app_name }}
+          package: artifacts/api
+
+      - name: Read Static Web Apps deployment token
+        if: env.AZURE_SKIP_TERRAFORM != 'true'
+        id: static-web-app-token
+        run: |
+          token="$(az staticwebapp secrets list \
+            --name "${{ steps.terraform-output.outputs.static_web_app_name }}" \
+            --resource-group "${{ steps.terraform-output.outputs.resource_group_name }}" \
+            --query properties.apiKey \
+            --output tsv)"
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy web
+        if: env.AZURE_SKIP_TERRAFORM != 'true'
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          action: upload
+          app_location: apps/web/dist
+          azure_static_web_apps_api_token: ${{ steps.static-web-app-token.outputs.token }}
+          skip_api_build: true
+          skip_app_build: true

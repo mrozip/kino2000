@@ -9,25 +9,12 @@ Create the repository, project-management structure, automated validation, Terra
 - Initialise React, TypeScript, and Vite application
 - Initialise Azure Functions TypeScript API
 - Configure root workspace commands
-- Add shared TypeScript configuration
-- Add ESLint and formatting configuration
-- Add unit-test frameworks
 - Create the initial repository structure
-- Add README
-- Add CONTRIBUTING guide
-- Add SECURITY policy
-- Add issue templates
-- Add pull request template
-- Add CODEOWNERS
+- Add READMEs where appropriate
 - Configure Dependabot
-- Create GitHub Project
-- Create initial issues and sprint fields
-- Create Markdown planning documentation
-- Configure the docs folder for Obsidian use
 - Bootstrap Terraform remote state
 - Provision the Azure development environment
-- Configure GitHub-to-Azure OIDC authentication
-- Deploy a placeholder homepage
+- Deploy a placeholder homepage - Very basic React app with a single page consisting of a welcome screen with no CSS or styling at this time
 - Add deployment and local-development documentation
 
 ## Acceptance Criteria
@@ -40,5 +27,3 @@ Create the repository, project-management structure, automated validation, Terra
 - The placeholder application is deployed to Azure.
 - Deployment from main is automated.
 - GitHub Issues and Projects are configured.
-- Project documentation is readable in both GitHub and Obsidian.
-

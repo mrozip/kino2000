@@ -1,0 +1,15 @@
+application_name              = "kino2000"
+cosmos_database               = "kino2000"
+environment                   = "dev"
+function_app_name             = "func-kino2000-dev-001"
+function_storage_account_name = "stkino2000dev001"
+location                      = "uksouth"
+provision_api                 = false
+static_web_app_location       = "eastus2"
+static_web_app_name           = "stapp-kino2000-dev-001"
+
+tags = {
+  application = "kino2000"
+  environment = "dev"
+  managed_by  = "terraform"
+}

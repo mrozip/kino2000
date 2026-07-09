@@ -1,0 +1,9 @@
+node_modules
+coverage
+dist
+apps/**/dist
+artifacts
+docs/**/*.md
+infra/terraform/**/.terraform
+*.tfstate
+*.tfstate.*
