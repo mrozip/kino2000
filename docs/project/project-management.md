@@ -59,3 +59,4 @@ Markdown documentation should contain:
 
 The full backlog should not be duplicated in both Markdown and GitHub Issues.
 
+Project setup details are captured in [GitHub project setup](github-project-setup.md).

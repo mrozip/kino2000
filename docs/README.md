@@ -11,6 +11,7 @@ kino2000 is an online movie database where users can search for films, record ra
 - [Repository layout](project/repository-layout.md)
 - [Delivery roadmap](delivery/roadmap.md)
 - [Sprint plans](delivery/sprints/README.md)
+- [GitHub project setup](project/github-project-setup.md)
 
 ## Engineering Reference
 
@@ -18,6 +19,7 @@ kino2000 is an online movie database where users can search for films, record ra
 - [Infrastructure](operations/infrastructure.md)
 - [Environments](operations/environments.md)
 - [Deployment](operations/deployment.md)
+- [Local development](operations/local-development.md)
 - [Security requirements](operations/security.md)
 - [Testing strategy](quality/testing-strategy.md)
 - [CI/CD](delivery/ci-cd.md)

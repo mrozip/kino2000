@@ -1,0 +1,10 @@
+container_name       = "tfstate"
+location             = "uksouth"
+resource_group_name  = "rg-kino2000-tfstate"
+storage_account_name = "stkino2000tfstate001"
+
+tags = {
+  application = "kino2000"
+  environment = "bootstrap"
+  managed_by  = "terraform"
+}

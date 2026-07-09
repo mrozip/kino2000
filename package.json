@@ -1,0 +1,54 @@
+{
+  "name": "kino2000",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace @kino2000/web",
+    "dev:api": "npm run dev --workspace @kino2000/api",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --check .",
+    "format:write": "prettier --write .",
+    "github:setup": "bash scripts/setup-github-project.sh",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:watch": "npm run test:watch --workspaces --if-present",
+    "package:api": "node scripts/prepare-api-package.mjs",
+    "terraform:fmt": "terraform -chdir=infra/terraform/bootstrap fmt -check && terraform -chdir=infra/terraform/environments/dev fmt -check",
+    "terraform:validate": "terraform -chdir=infra/terraform/bootstrap validate && terraform -chdir=infra/terraform/environments/dev validate"
+  },
+  "dependencies": {
+    "@azure/functions": "4.16.2",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.2",
+    "@types/node": "22.20.1",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "4.7.0",
+    "eslint": "9.39.4",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-react-hooks": "5.2.0",
+    "eslint-plugin-react-refresh": "0.4.26",
+    "globals": "15.15.0",
+    "jsdom": "26.1.0",
+    "prettier": "3.9.4",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.63.0",
+    "vite": "7.3.6",
+    "vitest": "3.2.7"
+  },
+  "allowScripts": {}
+}
